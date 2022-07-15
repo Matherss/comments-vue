@@ -1,19 +1,35 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <post-comment class="comment" v-for="comment in comments" :comment="comment" :key="comment.id" @del="deleteComment">
+    </post-comment>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import axios from "axios";
+import PostComment from "./components/PostComment.vue";
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  name: "App",
+  components: { PostComment },
+  data() {
+    return {
+      comments: []
+    };
+  },
+  methods: {
+    async fetchComments() {
+      await axios
+        .get("https://jsonplaceholder.typicode.com/posts/1/comments")
+        .then((res) => (this.comments = res.data));
+    },
+    deleteComment(element) {
+      this.comments = this.comments.filter((item) => item.id !== element);
+    }
+  },
+  mounted: function () {
+    this.comments = this.fetchComments();
   }
-}
+};
 </script>
 
 <style>
